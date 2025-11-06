@@ -21,10 +21,10 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_tubaron';
-$plugin->version = 2025110605; // YYYYMMDDXX format (v1.4.0 Sprint 4 - Analytics Dashboard)
+$plugin->version = 2025110606; // YYYYMMDDXX format (v1.5.0 Sprint 5 - Achievements & LGPD)
 $plugin->requires = 2023100900; // MooVurix 4.3+ required (based on Moodle)
-$plugin->maturity = MATURITY_STABLE;
-$plugin->release = 'v1.4.0';
+$plugin->maturity = MATURITY_RC; // Release Candidate
+$plugin->release = 'v1.5.0';
 $plugin->dependencies = [];
 
 

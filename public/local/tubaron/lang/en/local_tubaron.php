@@ -97,7 +97,7 @@ $string['tasktype'] = 'Tipo';
 $string['tasktype_individual'] = 'Individual';
 $string['tasktype_team'] = 'Equipe';
 $string['tasktype_competitive'] = 'Competitiva';
-$string['deadline'] = 'Prazo';
+$string['duedate'] = 'Prazo';
 $string['points'] = 'Pontos';
 $string['mission'] = 'Missão';
 $string['createtask'] = 'Criar Tarefa';
@@ -477,4 +477,61 @@ $string['tasktypesdistribution'] = 'Distribuição por Tipo de Tarefa';
 $string['taskstatusdistribution'] = 'Distribuição por Status';
 $string['topperformers'] = 'Top Performers';
 $string['noactiveseason'] = 'Não há temporada ativa';
+
+// Sprint 5 - Achievements & Privacy (LGPD)
+$string['achievements'] = 'Conquistas';
+$string['achievementscount'] = '{$a->unlocked} de {$a->total} conquistas desbloqueadas';
+$string['unlocked'] = 'Desbloqueadas';
+$string['locked'] = 'Bloqueadas';
+$string['progress'] = 'Progresso';
+$string['unlockedon'] = 'Desbloqueado em';
+$string['achievementunlocked'] = 'Conquista Desbloqueada!';
+$string['achievementunlockedmessage'] = 'Parabéns! Você desbloqueou a conquista: {$a->name} - {$a->description}';
+
+// Privacy/LGPD
+$string['exportmydata'] = 'Exportar Meus Dados (LGPD)';
+$string['exportmydatadesc'] = 'Conforme Lei Geral de Proteção de Dados (LGPD Art. 18), você tem direito à portabilidade dos seus dados pessoais.';
+$string['lgpdinfo'] = 'Este export contém todos os seus dados armazenados no sistema Tubaron, incluindo: tarefas criadas, submissões, votos, conquistas, rankings e participação em equipes.';
+$string['exportjson'] = 'Exportar JSON';
+$string['datapreview'] = 'Pré-visualização dos Dados';
+$string['taskscreated'] = 'Tarefas Criadas';
+$string['nodatafound'] = 'Nenhum dado encontrado';
+
+// Privacy metadata
+$string['privacy:metadata:tasks'] = 'Tarefas criadas pelo usuário';
+$string['privacy:metadata:tasks:createdby'] = 'ID do usuário criador';
+$string['privacy:metadata:tasks:title'] = 'Título da tarefa';
+$string['privacy:metadata:tasks:description'] = 'Descrição da tarefa';
+$string['privacy:metadata:tasks:timecreated'] = 'Data de criação';
+$string['privacy:metadata:submissions'] = 'Submissões de tarefas';
+$string['privacy:metadata:submissions:userid'] = 'ID do usuário';
+$string['privacy:metadata:submissions:taskid'] = 'ID da tarefa';
+$string['privacy:metadata:submissions:submissiontext'] = 'Texto da submissão';
+$string['privacy:metadata:submissions:status'] = 'Status da submissão';
+$string['privacy:metadata:submissions:timecreated'] = 'Data da submissão';
+$string['privacy:metadata:votes'] = 'Votos realizados';
+$string['privacy:metadata:votes:voterid'] = 'ID do votante';
+$string['privacy:metadata:votes:taskid'] = 'ID da tarefa votada';
+$string['privacy:metadata:votes:votevalue'] = 'Valor do voto';
+$string['privacy:metadata:votes:timecreated'] = 'Data do voto';
+$string['privacy:metadata:achievements'] = 'Conquistas desbloqueadas';
+$string['privacy:metadata:achievements:userid'] = 'ID do usuário';
+$string['privacy:metadata:achievements:achievementid'] = 'ID da conquista';
+$string['privacy:metadata:achievements:timeunlocked'] = 'Data de desbloqueio';
+$string['privacy:metadata:rankings'] = 'Posições em rankings';
+$string['privacy:metadata:rankings:userid'] = 'ID do usuário';
+$string['privacy:metadata:rankings:seasonid'] = 'ID da temporada';
+$string['privacy:metadata:rankings:totalpoints'] = 'Total de pontos';
+$string['privacy:metadata:rankings:rank'] = 'Posição no ranking';
+$string['privacy:metadata:teammembers'] = 'Participação em equipes';
+$string['privacy:metadata:teammembers:userid'] = 'ID do usuário';
+$string['privacy:metadata:teammembers:teamid'] = 'ID da equipe';
+$string['privacy:metadata:teammembers:role'] = 'Papel na equipe';
+$string['privacy:metadata:teammembers:joineddate'] = 'Data de entrada';
+$string['privacy:path:tasks'] = 'Tarefas Criadas';
+$string['privacy:path:submissions'] = 'Submissões';
+$string['privacy:path:votes'] = 'Votos';
+$string['privacy:path:achievements'] = 'Conquistas';
+$string['privacy:path:rankings'] = 'Rankings';
+$string['privacy:path:teams'] = 'Equipes';
 

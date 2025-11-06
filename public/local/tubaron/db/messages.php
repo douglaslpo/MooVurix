@@ -1,7 +1,7 @@
 <?php
-// This file is part of MooVurix - Based on Moodle - http://moodle.org/
+// This file is part of Moodle - http://moodle.org/
 //
-// MooVurix is free software: you can redistribute it and/or modify
+// Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
@@ -76,6 +76,44 @@ $messageproviders = [
     // Report ready notification (admin)
     'reportready' => [
         'capability' => 'local/tubaron:viewreports',
+        'defaults' => [
+            'popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_ENABLED,
+            'email' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_ENABLED,
+        ],
+    ],
+
+    // Sprint 5 - New notifications
+    
+    // Team invitation notification
+    'teaminvite' => [
+        'capability' => 'local/tubaron:jointeam',
+        'defaults' => [
+            'popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_ENABLED,
+            'email' => MESSAGE_PERMITTED,
+        ],
+    ],
+
+    // Task urgent (< 24h) notification
+    'taskurgent' => [
+        'capability' => 'local/tubaron:viewtasks',
+        'defaults' => [
+            'popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_ENABLED,
+            'email' => MESSAGE_DISALLOWED,
+        ],
+    ],
+
+    // Season starting notification
+    'seasonstarting' => [
+        'capability' => 'local/tubaron:viewdashboard',
+        'defaults' => [
+            'popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_ENABLED,
+            'email' => MESSAGE_PERMITTED,
+        ],
+    ],
+
+    // Season ending notification
+    'seasonending' => [
+        'capability' => 'local/tubaron:viewdashboard',
         'defaults' => [
             'popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_ENABLED,
             'email' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_ENABLED,
