@@ -1,0 +1,23 @@
+{{!
+    This file is part of MooVurix - Based on Moodle
+    
+    Tubaron Gamification System - Stats Widget Template
+    
+    Template Mustache para widget de estatísticas
+    
+    @package    local_tubaron
+    @copyright  2025 Tubaron Telecomunicações
+    @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+}}
+
+<div class="tubaron-stat-card {{color}}">
+    <div class="tubaron-stat-icon">{{icon}}</div>
+    <div class="tubaron-stat-value {{#small}}small{{/small}}">{{value}}</div>
+    <div class="tubaron-stat-label">{{label}}</div>
+    {{#trend}}
+    <div class="tubaron-stat-trend {{trendclass}}">
+        {{trendicon}} {{trendtext}}
+    </div>
+    {{/trend}}
+</div>
+

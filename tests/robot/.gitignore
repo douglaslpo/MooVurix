@@ -1,0 +1,33 @@
+# Ambiente virtual Python para Robot Framework
+venv/
+.venv/
+env/
+ENV/
+
+# Resultados dos testes
+tests/robot/results/
+*.log
+*.xml
+*.html
+
+# Screenshots
+*.png
+*.jpg
+
+# Cache Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Arquivos temporários
+*.tmp
+*.bak
+*.backup

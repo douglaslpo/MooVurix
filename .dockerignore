@@ -1,0 +1,48 @@
+# Git
+.git
+.gitignore
+
+# Docker
+docker-compose*.yml
+Dockerfile*
+.dockerignore
+
+# IDEs
+.vscode
+.idea
+*.swp
+*.swo
+
+# Node
+node_modules
+npm-debug.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temp
+*.tmp
+*.temp
+
+# Backups
+*.bak
+*.backup
+
+# Environment
+.env
+.env.local
+
+# Cache
+cache/
+localcache/
+temp/
+
+# Virtual Environment
+venv/
+env/
+
+

@@ -1,0 +1,50 @@
+{{!
+    This file is part of MooVurix - Based on Moodle
+    
+    Tubaron Gamification System - Team Card Template
+    
+    Template Mustache para card de equipe reutilizável
+    
+    @package    local_tubaron
+    @copyright  2025 Tubaron Telecomunicações
+    @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+}}
+
+<div class="tubaron-team-card {{#active}}active{{/active}}" data-teamid="{{id}}">
+    <div class="tubaron-team-card-header">
+        <h3 class="tubaron-team-name">{{name}}</h3>
+        <span class="tubaron-team-status badge badge-{{statuscolor}}">
+            {{statusicon}} {{statustext}}
+        </span>
+    </div>
+    
+    {{#description}}
+    <p class="tubaron-team-description">{{description}}</p>
+    {{/description}}
+    
+    <div class="tubaron-team-stats">
+        <div class="tubaron-team-stat">
+            👥 {{membercount}} {{#str}}members, local_tubaron{{/str}}
+        </div>
+        {{#leadername}}
+        <div class="tubaron-team-stat">
+            👑 {{leadername}}
+        </div>
+        {{/leadername}}
+        <div class="tubaron-team-stat">
+            📅 {{createddate}}
+        </div>
+    </div>
+    
+    <div class="tubaron-team-actions">
+        <a href="{{viewurl}}" class="btn btn-sm btn-info">
+            👁️ {{#str}}view{{/str}}
+        </a>
+        {{#canedit}}
+        <a href="{{editurl}}" class="btn btn-sm btn-secondary">
+            ✏️ {{#str}}edit{{/str}}
+        </a>
+        {{/canedit}}
+    </div>
+</div>
+

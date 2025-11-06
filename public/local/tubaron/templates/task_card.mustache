@@ -1,0 +1,54 @@
+{{!
+    This file is part of MooVurix - Based on Moodle
+    
+    Tubaron Gamification System - Task Card Template
+    
+    Template Mustache para card de tarefa reutilizável
+    
+    @package    local_tubaron
+    @copyright  2025 Tubaron Telecomunicações
+    @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+}}
+
+<div class="tubaron-task-card {{status}}" data-taskid="{{id}}">
+    <div class="tubaron-task-card-header">
+        <h3 class="tubaron-task-title">
+            {{#typeicon}}{{typeicon}}{{/typeicon}} {{title}}
+        </h3>
+        <span class="badge badge-{{statuscolor}}">
+            {{statustext}}
+        </span>
+    </div>
+    
+    <div class="tubaron-task-meta">
+        <span class="badge badge-dark">{{typetext}}</span>
+        <span class="tubaron-task-points">🏆 {{points}} pts</span>
+    </div>
+    
+    {{#description}}
+    <p class="tubaron-task-description">{{description}}</p>
+    {{/description}}
+    
+    <div class="tubaron-task-info">
+        <div class="tubaron-task-info-item">
+            📂 {{missionname}}
+        </div>
+        {{#deadline}}
+        <div class="tubaron-task-info-item {{#isoverdue}}overdue{{/isoverdue}}">
+            ⏰ {{deadlinetext}}
+        </div>
+        {{/deadline}}
+    </div>
+    
+    <div class="tubaron-task-actions">
+        <a href="{{viewurl}}" class="btn btn-sm btn-info">
+            👁️ {{#str}}view{{/str}}
+        </a>
+        {{#canedit}}
+        <a href="{{editurl}}" class="btn btn-sm btn-secondary">
+            ✏️ {{#str}}edit{{/str}}
+        </a>
+        {{/canedit}}
+    </div>
+</div>
+

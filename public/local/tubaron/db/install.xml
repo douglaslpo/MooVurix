@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/tubaron/db" VERSION="20251106" COMMENT="XMLDB file for Tubaron Gamification System"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <!-- Temporadas (Seasons) -->
+    <TABLE NAME="local_tubaron_seasons" COMMENT="Temporadas de gamificação (6-12 meses)">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="startdate" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Unix timestamp"/>
+        <FIELD NAME="enddate" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Unix timestamp"/>
+        <FIELD NAME="rules" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="JSON com regras pontuação"/>
+        <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="draft" SEQUENCE="false" COMMENT="draft, active, closed"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timeclosed" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="status" UNIQUE="false" FIELDS="status"/>
+        <INDEX NAME="dates" UNIQUE="false" FIELDS="startdate,enddate"/>
+      </INDEXES>
+    </TABLE>
+
+    <!-- Equipes (Teams) - Integra com groups do Moodle -->
+    <TABLE NAME="local_tubaron_teams" COMMENT="Equipes para competições">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="seasonid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="groupid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="FK para mdl_groups (opcional)"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="captainid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="FK para mdl_user"/>
+        <FIELD NAME="memberscount" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="seasonid" TYPE="foreign" FIELDS="seasonid" REFTABLE="local_tubaron_seasons" REFFIELDS="id"/>
+        <KEY NAME="groupid" TYPE="foreign" FIELDS="groupid" REFTABLE="groups" REFFIELDS="id"/>
+        <KEY NAME="captainid" TYPE="foreign" FIELDS="captainid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="seasonname" UNIQUE="true" FIELDS="seasonid,name"/>
+      </INDEXES>
+    </TABLE>
+
+    <!-- Membros das Equipes -->
+    <TABLE NAME="local_tubaron_team_members" COMMENT="Membros das equipes">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="teamid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="active" SEQUENCE="false" COMMENT="active, left"/>
+        <FIELD NAME="timejoined" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="teamid" TYPE="foreign" FIELDS="teamid" REFTABLE="local_tubaron_teams" REFFIELDS="id" ONDELETE="cascade"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id" ONDELETE="cascade"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="teamuser" UNIQUE="true" FIELDS="teamid,userid"/>
+        <INDEX NAME="activemembers" UNIQUE="false" FIELDS="status,teamid"/>
+      </INDEXES>
+    </TABLE>
+
+    <!-- Missões (agrupamento de tarefas) -->
+    <TABLE NAME="local_tubaron_missions" COMMENT="Missões (agrupamento de tarefas com peso)">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="seasonid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="description" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="weight" TYPE="number" LENGTH="5" NOTNULL="true" DEFAULT="1.0" SEQUENCE="false" DECIMALS="2" COMMENT="Multiplicador pontos"/>
+        <FIELD NAME="startdate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="enddate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="seasonid" TYPE="foreign" FIELDS="seasonid" REFTABLE="local_tubaron_seasons" REFFIELDS="id" ONDELETE="cascade"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="seasonname" UNIQUE="true" FIELDS="seasonid,name"/>
+      </INDEXES>
+    </TABLE>
+
+    <!-- Tarefas -->
+    <TABLE NAME="local_tubaron_tasks" COMMENT="Tarefas gamificadas">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="type" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="individual, team, competitive"/>
+        <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="description" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="creatorid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="missionid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Associar a curso Moodle (opcional)"/>
+        <FIELD NAME="duedate" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="points" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="10" SEQUENCE="false"/>
+        <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="open" SEQUENCE="false" COMMENT="open, in_progress, voting, completed"/>
+        <FIELD NAME="votingconfig" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="JSON config votação"/>
+        <FIELD NAME="votingopenedtime" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="votingclosedtime" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="creatorid" TYPE="foreign" FIELDS="creatorid" REFTABLE="user" REFFIELDS="id"/>
+        <KEY NAME="missionid" TYPE="foreign" FIELDS="missionid" REFTABLE="local_tubaron_missions" REFFIELDS="id" ONDELETE="setnull"/>
+        <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id" ONDELETE="setnull"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="typestatus" UNIQUE="false" FIELDS="type,status"/>
+        <INDEX NAME="duedate" UNIQUE="false" FIELDS="duedate,status"/>
+      </INDEXES>
+    </TABLE>
+
+    <!-- Atribuições de Tarefas -->
+    <TABLE NAME="local_tubaron_task_assignments" COMMENT="Atribuição de tarefas a users/teams">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="taskid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="assigneetype" TYPE="char" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="user, team"/>
+        <FIELD NAME="assigneeid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="taskid" TYPE="foreign" FIELDS="taskid" REFTABLE="local_tubaron_tasks" REFFIELDS="id" ONDELETE="cascade"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="taskassignee" UNIQUE="true" FIELDS="taskid,assigneetype,assigneeid"/>
+        <INDEX NAME="assignee" UNIQUE="false" FIELDS="assigneetype,assigneeid"/>
+      </INDEXES>
+    </TABLE>
+
+    <!-- Submissões -->
+    <TABLE NAME="local_tubaron_submissions" COMMENT="Submissões de tarefas">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="taskid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="submittertype" TYPE="char" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="user, team"/>
+        <FIELD NAME="submitterid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="content" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="files" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="JSON array file paths"/>
+        <FIELD NAME="votescount" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="avgscore" TYPE="number" LENGTH="5" NOTNULL="false" SEQUENCE="false" DECIMALS="2"/>
+        <FIELD NAME="timesubmitted" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="taskid" TYPE="foreign" FIELDS="taskid" REFTABLE="local_tubaron_tasks" REFFIELDS="id" ONDELETE="cascade"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="submitter" UNIQUE="false" FIELDS="submittertype,submitterid"/>
+      </INDEXES>
+    </TABLE>
+
+    <!-- Votos -->
+    <TABLE NAME="local_tubaron_votes" COMMENT="Votos em submissões competitivas">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="taskid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="voterid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="submissionid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="votevalue" TYPE="number" LENGTH="5" NOTNULL="true" SEQUENCE="false" DECIMALS="2" COMMENT="0-10"/>
+        <FIELD NAME="iphash" TYPE="char" LENGTH="64" NOTNULL="false" SEQUENCE="false" COMMENT="SHA256 hash IP"/>
+        <FIELD NAME="timevoted" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="taskid" TYPE="foreign" FIELDS="taskid" REFTABLE="local_tubaron_tasks" REFFIELDS="id" ONDELETE="cascade"/>
+        <KEY NAME="voterid" TYPE="foreign" FIELDS="voterid" REFTABLE="user" REFFIELDS="id" ONDELETE="cascade"/>
+        <KEY NAME="submissionid" TYPE="foreign" FIELDS="submissionid" REFTABLE="local_tubaron_submissions" REFFIELDS="id" ONDELETE="cascade"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="taskvote" UNIQUE="true" FIELDS="taskid,voterid" COMMENT="1 voto por tarefa"/>
+      </INDEXES>
+    </TABLE>
+
+    <!-- Pontuações -->
+    <TABLE NAME="local_tubaron_scores" COMMENT="Pontuações users/teams por temporada">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="entitytype" TYPE="char" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="user, team"/>
+        <FIELD NAME="entityid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="seasonid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="points" TYPE="number" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" DECIMALS="2"/>
+        <FIELD NAME="rank" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="taskcount" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="firstplaces" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="secondplaces" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="thirdplaces" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="seasonid" TYPE="foreign" FIELDS="seasonid" REFTABLE="local_tubaron_seasons" REFFIELDS="id" ONDELETE="cascade"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="seasonentity" UNIQUE="true" FIELDS="seasonid,entitytype,entityid"/>
+        <INDEX NAME="ranking" UNIQUE="false" FIELDS="seasonid,points,firstplaces"/>
+      </INDEXES>
+    </TABLE>
+
+    <!-- Achievements (Conquistas) -->
+    <TABLE NAME="local_tubaron_achievements" COMMENT="Conquistas/badges gamificação">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="code" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="description" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="iconurl" TYPE="char" LENGTH="500" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="criteria" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="JSON criteria"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="code" UNIQUE="true" FIELDS="code"/>
+      </INDEXES>
+    </TABLE>
+
+    <!-- User Achievements -->
+    <TABLE NAME="local_tubaron_user_achievements" COMMENT="Conquistas desbloqueadas por usuários">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="achievementid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timeunlocked" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id" ONDELETE="cascade"/>
+        <KEY NAME="achievementid" TYPE="foreign" FIELDS="achievementid" REFTABLE="local_tubaron_achievements" REFFIELDS="id" ONDELETE="cascade"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="userachievement" UNIQUE="true" FIELDS="userid,achievementid"/>
+      </INDEXES>
+    </TABLE>
+
+    <!-- Streaks (Sequências) -->
+    <TABLE NAME="local_tubaron_streaks" COMMENT="Sequências de atividade (daily/weekly)">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="type" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="daily, weekly"/>
+        <FIELD NAME="currentcount" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="bestcount" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="lastactivitytime" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id" ONDELETE="cascade"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="usertype" UNIQUE="true" FIELDS="userid,type"/>
+      </INDEXES>
+    </TABLE>
+
+    <!-- Audit Logs (LGPD compliance) -->
+    <TABLE NAME="local_tubaron_audit_logs" COMMENT="Audit trail completo (LGPD)">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="entity" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="entityid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="action" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false" COMMENT="created, updated, deleted"/>
+        <FIELD NAME="actorid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="before" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="JSON before state"/>
+        <FIELD NAME="after" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="JSON after state"/>
+        <FIELD NAME="iphash" TYPE="char" LENGTH="64" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="actorid" TYPE="foreign" FIELDS="actorid" REFTABLE="user" REFFIELDS="id" ONDELETE="setnull"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="entity" UNIQUE="false" FIELDS="entity,entityid"/>
+        <INDEX NAME="time" UNIQUE="false" FIELDS="timecreated"/>
+      </INDEXES>
+    </TABLE>
+
+  </TABLES>
+</XMLDB>
+
